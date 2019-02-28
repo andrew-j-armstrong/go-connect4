@@ -1,0 +1,9 @@
+# Save Games
+*.gam
+
+# Visual Studio
+.vs/
+.vscode/
+
+# Executables
+*.exe
