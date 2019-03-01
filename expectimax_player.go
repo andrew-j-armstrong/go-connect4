@@ -127,6 +127,10 @@ func (player *ExpectimaxPlayer) calculateChildLikelihoodMap(getChildValue func(i
 
 func (player *ExpectimaxPlayer) calculateChildLikelihood(getGame func() expectimax.Game, getChildValue func(interface{}) float64, childLikelihood *extensions.ValueMap) {
 	genericGame := getGame()
+	if genericGame == nil {
+		return
+	}
+
 	game, ok := genericGame.(*Game)
 
 	if !ok {
@@ -154,6 +158,6 @@ func (player *ExpectimaxPlayer) calculateChildLikelihood(getGame func() expectim
 
 func NewExpectimaxPlayer(game *Game, playerID ExpectimaxPlayerID, heuristic ExpectimaxHeuristic, difficulty float64, maxSearchTime time.Duration) *ExpectimaxPlayer {
 	player := &ExpectimaxPlayer{game, playerID, nil, difficulty, time.Time{}, maxSearchTime}
-	player.expectimaxBase = expectimax.NewExpectimax(game, getExpectimaxHeuristic(heuristic), player.calculateChildLikelihood, 1000000)
+	player.expectimaxBase = expectimax.NewExpectimax(game, getExpectimaxHeuristic(heuristic), player.calculateChildLikelihood, 10000)
 	return player
 }

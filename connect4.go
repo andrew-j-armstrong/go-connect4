@@ -75,9 +75,9 @@ func choosePlayer(game *Game, player Connect4Player) GameSimPlayer {
 			var expectimaxPlayer *ExpectimaxPlayer
 			switch player {
 			case Player1:
-				expectimaxPlayer = NewExpectimaxPlayer(game, ExpectimaxPlayer1, chooseHeuristic(player), difficulty, time.Duration(5)*time.Second)
+				expectimaxPlayer = NewExpectimaxPlayer(game, ExpectimaxPlayer1, chooseHeuristic(player), difficulty, time.Duration(50*difficulty)*time.Millisecond)
 			case Player2:
-				expectimaxPlayer = NewExpectimaxPlayer(game, ExpectimaxPlayer2, chooseHeuristic(player), difficulty, time.Duration(5)*time.Second)
+				expectimaxPlayer = NewExpectimaxPlayer(game, ExpectimaxPlayer2, chooseHeuristic(player), difficulty, time.Duration(50*difficulty)*time.Millisecond)
 			}
 
 			go expectimaxPlayer.Run()
