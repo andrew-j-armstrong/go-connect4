@@ -76,7 +76,7 @@ func (player *ExpectimaxPlayer) IsReadyToMakeMove() bool {
 
 	sort.Float64s(moveValues)
 
-	return moveValues[len(moveValues)-1] >= 1.0 || moveValues[len(moveValues)-1] <= -1.0 || moveValues[len(moveValues)-1]-moveValues[len(moveValues)-2] >= 0.5*player.difficulty/100.0
+	return moveValues[0] >= 1.0 || moveValues[len(moveValues)-1] <= -1.0 || moveValues[len(moveValues)-1]-moveValues[len(moveValues)-2] >= 0.5*player.difficulty/100.0
 }
 
 func (player *ExpectimaxPlayer) buildSelectionWheel(moves *extensions.InterfaceSlice, getMoveValue func(interface{}) float64, playerDifficulty float64) *extensions.ValueMap {
@@ -120,8 +120,10 @@ func (player *ExpectimaxPlayer) calculateChildLikelihoodMap(getChildValue func(i
 	selectionWheel := player.buildSelectionWheel(childLikelihood.GetKeys(), getChildValue, playerDifficulty)
 	totalWheelValue := selectionWheel.GetTotalValue()
 
+	minSpreadWeight := minSpread / float64(len(*selectionWheel))
+	wheelValueMultiplier := (1.0 - minSpread) / totalWheelValue
 	for move, wheelValue := range *selectionWheel {
-		(*childLikelihood)[move] = (minSpread / float64(len(*selectionWheel))) + ((1.0 - minSpread) * wheelValue / totalWheelValue)
+		(*childLikelihood)[move] = minSpreadWeight + wheelValue*wheelValueMultiplier
 	}
 }
 
@@ -158,6 +160,6 @@ func (player *ExpectimaxPlayer) calculateChildLikelihood(getGame func() expectim
 
 func NewExpectimaxPlayer(game *Game, playerID ExpectimaxPlayerID, heuristic ExpectimaxHeuristic, difficulty float64, maxSearchTime time.Duration) *ExpectimaxPlayer {
 	player := &ExpectimaxPlayer{game, playerID, nil, difficulty, time.Time{}, maxSearchTime}
-	player.expectimaxBase = expectimax.NewExpectimax(game, getExpectimaxHeuristic(heuristic), player.calculateChildLikelihood, 10000)
+	player.expectimaxBase = expectimax.NewExpectimax(game, getExpectimaxHeuristic(heuristic), player.calculateChildLikelihood, 1000000)
 	return player
 }
