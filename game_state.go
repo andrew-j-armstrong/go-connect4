@@ -72,15 +72,15 @@ func (gameState *GameState) String() string {
 	output := gameState.board.String()
 	switch gameState.turn {
 	case Draw:
-		output += "GameState Over - Draw!\n"
+		output += "Game Over - Draw!\n"
 	case Player1Turn:
 		output += "Player 1's turn.\n"
 	case Player2Turn:
 		output += "Player 2's turn.\n"
 	case Player1Won:
-		output += "GameState Over - Player 1 Won!\n"
+		output += "Game Over - Player 1 Won!\n"
 	case Player2Won:
-		output += "GameState Over - Player 2 Won!\n"
+		output += "Game Over - Player 2 Won!\n"
 	default:
 		output += "Invalid Turn!\n"
 	}
