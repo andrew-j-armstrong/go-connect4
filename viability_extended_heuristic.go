@@ -1,10 +1,10 @@
-package main
+package connect4
 
 type ViabilityExtendedHeuristic struct {
-	targetPlayer Connect4Player
+	targetPlayer PlayerID
 }
 
-func NewViabilityExtendedHeuristic(targetPlayer Connect4Player) *ViabilityExtendedHeuristic {
+func NewViabilityExtendedHeuristic(targetPlayer PlayerID) *ViabilityExtendedHeuristic {
 	return &ViabilityExtendedHeuristic{targetPlayer}
 }
 
@@ -30,16 +30,16 @@ func (heuristic *ViabilityExtendedHeuristic) increaseViabilityScores(player1Piec
 	}
 }
 
-func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
-	if game.turn == Draw {
+func (heuristic *ViabilityExtendedHeuristic) Heuristic(gameState *GameState) float64 {
+	if gameState.turn == Draw {
 		return 0.0
-	} else if game.turn == Player1Won {
+	} else if gameState.turn == Player1Won {
 		if heuristic.targetPlayer == Player1 {
 			return 1.0
 		} else {
 			return -1.0
 		}
-	} else if game.turn == Player2Won {
+	} else if gameState.turn == Player2Won {
 		if heuristic.targetPlayer == Player1 {
 			return -1.0
 		} else {
@@ -52,16 +52,16 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 
 	// Look for next turn win opportunity
 	var currentPlayerPiece Piece
-	if game.turn == Player1Turn {
+	if gameState.turn == Player1Turn {
 		currentPlayerPiece = Player1Piece
-	} else if game.turn == Player2Turn {
+	} else if gameState.turn == Player2Turn {
 		currentPlayerPiece = Player2Piece
 	}
 
 	currentPlayerWinOpportunities := 0
 	for x := 0; x < BoardWidth; x++ {
 		y := BoardHeight - 1
-		for y >= 0 && game.board[y][x] != EmptyPiece {
+		for y >= 0 && gameState.board[y][x] != EmptyPiece {
 			y--
 		}
 
@@ -74,13 +74,13 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		// Check horizontal
 		currentPlayerPieceCount = 0
 		for nextX := x - 1; nextX >= 0; nextX-- {
-			if game.board[y][nextX] != currentPlayerPiece {
+			if gameState.board[y][nextX] != currentPlayerPiece {
 				break
 			}
 			currentPlayerPieceCount++
 		}
 		for nextX := x + 1; nextX < BoardWidth; nextX++ {
-			if game.board[y][nextX] != currentPlayerPiece {
+			if gameState.board[y][nextX] != currentPlayerPiece {
 				break
 			}
 			currentPlayerPieceCount++
@@ -96,7 +96,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 			currentPlayerPieceCount = 0
 
 			for nextY := y + 1; nextY < BoardHeight; nextY++ {
-				if game.board[nextY][x] != currentPlayerPiece {
+				if gameState.board[nextY][x] != currentPlayerPiece {
 					break
 				}
 				currentPlayerPieceCount++
@@ -112,14 +112,14 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		currentPlayerPieceCount = 0
 
 		for nextX, nextY := x-1, y-1; nextX >= 0 && nextY >= 0; nextX, nextY = nextX-1, nextY-1 {
-			if game.board[nextY][nextX] != currentPlayerPiece {
+			if gameState.board[nextY][nextX] != currentPlayerPiece {
 				break
 			}
 			currentPlayerPieceCount++
 		}
 
 		for nextX, nextY := x+1, y+1; nextX < BoardWidth && nextY < BoardHeight; nextX, nextY = nextX+1, nextY+1 {
-			if game.board[nextY][nextX] != currentPlayerPiece {
+			if gameState.board[nextY][nextX] != currentPlayerPiece {
 				break
 			}
 			currentPlayerPieceCount++
@@ -134,14 +134,14 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		currentPlayerPieceCount = 0
 
 		for nextX, nextY := x-1, y+1; nextX >= 0 && nextY < BoardHeight; nextX, nextY = nextX-1, nextY+1 {
-			if game.board[nextY][nextX] != currentPlayerPiece {
+			if gameState.board[nextY][nextX] != currentPlayerPiece {
 				break
 			}
 			currentPlayerPieceCount++
 		}
 
 		for nextX, nextY := x+1, y-1; nextX < BoardWidth && nextY >= 0; nextX, nextY = nextX+1, nextY-1 {
-			if game.board[nextY][nextX] != currentPlayerPiece {
+			if gameState.board[nextY][nextX] != currentPlayerPiece {
 				break
 			}
 			currentPlayerPieceCount++
@@ -153,7 +153,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 	}
 
-	if (heuristic.targetPlayer == Player1 && game.turn == Player1Turn) || (heuristic.targetPlayer == Player2 && game.turn == Player2Turn) {
+	if (heuristic.targetPlayer == Player1 && gameState.turn == Player1Turn) || (heuristic.targetPlayer == Player2 && gameState.turn == Player2Turn) {
 		if currentPlayerWinOpportunities > 0 {
 			// Heuristic player has opportunity to win this turn
 			return 0.99
@@ -174,7 +174,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 
 		x := 0
 		for ; x < 3; x++ {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -183,7 +183,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 
 		for ; x < BoardWidth; x++ {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -192,7 +192,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 
 			heuristic.increaseViabilityScores(player1PieceCount, player2PieceCount, &player1Viability, &player2Viability)
 
-			switch game.board[y][x-3] {
+			switch gameState.board[y][x-3] {
 			case Player1Piece:
 				player1PieceCount--
 			case Player2Piece:
@@ -207,7 +207,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		player2PieceCount := 0
 		y := 0
 		for ; y < 3; y++ {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -216,7 +216,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 
 		for ; y < BoardHeight; y++ {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -225,7 +225,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 
 			heuristic.increaseViabilityScores(player1PieceCount, player2PieceCount, &player1Viability, &player2Viability)
 
-			switch game.board[y-3][x] {
+			switch gameState.board[y-3][x] {
 			case Player1Piece:
 				player1PieceCount--
 			case Player2Piece:
@@ -252,7 +252,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 
 		for i := 0; i < 3; i++ {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -264,7 +264,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 
 		for x < BoardWidth && y < BoardHeight {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -273,7 +273,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 
 			heuristic.increaseViabilityScores(player1PieceCount, player2PieceCount, &player1Viability, &player2Viability)
 
-			switch game.board[y-3][x-3] {
+			switch gameState.board[y-3][x-3] {
 			case Player1Piece:
 				player1PieceCount--
 			case Player2Piece:
@@ -303,7 +303,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 
 		for i := 0; i < 3; i++ {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -315,7 +315,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 
 		for x < BoardWidth && y >= 0 {
-			switch game.board[y][x] {
+			switch gameState.board[y][x] {
 			case Player1Piece:
 				player1PieceCount++
 			case Player2Piece:
@@ -324,7 +324,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 
 			heuristic.increaseViabilityScores(player1PieceCount, player2PieceCount, &player1Viability, &player2Viability)
 
-			switch game.board[y+3][x-3] {
+			switch gameState.board[y+3][x-3] {
 			case Player1Piece:
 				player1PieceCount--
 			case Player2Piece:
@@ -336,7 +336,7 @@ func (heuristic *ViabilityExtendedHeuristic) Heuristic(game *Game) float64 {
 		}
 	}
 
-	viability := float64(player1Viability-player2Viability) / float64(1000+player1Viability+player2Viability)
+	viability := float64(player1Viability-player2Viability) / float64(100+player1Viability+player2Viability)
 
 	if heuristic.targetPlayer == Player1 {
 		return viability

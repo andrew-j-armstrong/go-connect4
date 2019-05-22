@@ -1,4 +1,4 @@
-package main
+package connect4
 
 type Piece int
 
@@ -27,6 +27,8 @@ func (board *Board) IsEqual(otherBoard *Board) bool {
 
 func (board *Board) String() string {
 	var output string
+	output += "+---+---+---+---+---+---+---+\n"
+	output += "| 0 | 1 | 2 | 3 | 4 | 5 | 6 |\n"
 	for y := 0; y < BoardHeight; y++ {
 		output += "+---+---+---+---+---+---+---+\n"
 		for x := 0; x < BoardWidth; x++ {

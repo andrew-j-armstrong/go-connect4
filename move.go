@@ -1,24 +1,23 @@
-package main
+package connect4
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 )
 
 type Move int
 
-func ParseMove(moveString string) Move {
+func ParseMove(moveString string) (Move, error) {
 	move, err := strconv.Atoi(moveString)
 	if err != nil {
-		log.Fatalf("unable to parse move: %s", err)
+		return 0, fmt.Errorf("unable to parse move: %s", err)
 	}
 
 	if move < 0 || int(move) >= BoardWidth {
-		log.Fatalf("invalid move: %d", move)
+		return 0, fmt.Errorf("invalid move: %d", move)
 	}
 
-	return Move(move)
+	return Move(move), nil
 }
 
 func (move Move) String() string {

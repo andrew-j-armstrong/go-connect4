@@ -1,17 +1,17 @@
-package main
+package connect4
 
 type SimpleHeuristic struct {
-	targetPlayer Connect4Player
+	targetPlayer PlayerID
 }
 
-func NewSimpleHeuristic(targetPlayer Connect4Player) *SimpleHeuristic {
+func NewSimpleHeuristic(targetPlayer PlayerID) *SimpleHeuristic {
 	return &SimpleHeuristic{targetPlayer}
 }
 
-func (heuristic *SimpleHeuristic) Heuristic(game *Game) float64 {
-	if !game.IsGameOver() || game.turn == Draw {
+func (heuristic *SimpleHeuristic) Heuristic(gameState *GameState) float64 {
+	if !gameState.IsGameOver() || gameState.turn == Draw {
 		return 0.0
-	} else if game.turn == Player1Won {
+	} else if gameState.turn == Player1Won {
 		if heuristic.targetPlayer == Player1 {
 			return 1.0
 		} else {
